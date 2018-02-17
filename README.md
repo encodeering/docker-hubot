@@ -4,6 +4,10 @@
 
 ### Docker
 
+- https://hub.docker.com/r/encodeering/hubot-armhf/
+
+    ```docker pull encodeering/hubot-armhf:2.19-alpine-onbuild```
+
 - https://hub.docker.com/r/encodeering/hubot-amd64/
 
     ```docker pull encodeering/hubot-amd64:2.19-alpine-onbuild```
