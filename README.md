@@ -24,9 +24,6 @@ services:
       context: .
       dockerfile: Dockerfile.adapter
       args:
-        name: marvin
-        owner: Sirius Cybernetics Corporation
-        description: Zzzzz
         adapter: shell
     ports:
       - "8080:8080"
