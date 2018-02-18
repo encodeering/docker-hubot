@@ -6,32 +6,25 @@
 
 - https://hub.docker.com/r/encodeering/hubot-armhf/
 
-    ```docker pull encodeering/hubot-armhf:2.19-alpine-onbuild```
+    ```docker pull encodeering/hubot-armhf:2.19-alpine```
 
 - https://hub.docker.com/r/encodeering/hubot-amd64/
 
-    ```docker pull encodeering/hubot-amd64:2.19-alpine-onbuild```
+    ```docker pull encodeering/hubot-amd64:2.19-alpine```
 
 ### Compose
-
-```Dockerfile
-# Dockerfile.adapter
-FROM encodeering/hubot-amd64:2.19-alpine-onbuild
-```
 
 ```yml
 version: '3'
 services:
   hubot:
-    image: encodeering/hubot-amd64:2.19-alpine-shell
-    build:
-      context: .
-      dockerfile: Dockerfile.adapter
-      args:
-        adapter: shell
+    image: encodeering/hubot-amd64:2.19-alpine
     ports:
       - "8080:8080"
     environment:
+      - HUBOT_ADAPTER=shell             # default
+      - HUBOT_SCRIPTS=hubot-redis-brain # default
+      - HUBOT_MODULES=                  # default
       - REDIS_URL=redis://redis:6379/marvin
   redis:
     image: encodeering/redis-amd64:4.0-alpine
