@@ -11,30 +11,32 @@ ENV            EXPRESS_STATIC=''
 ENV            EXPRESS_PORT=8080
 ENV            HUBOT_VERSION=${version}
 
-RUN            apk --no-cache add jq expat                     \
- &&            mkdir       -p ${home} ${home}/scripts          \
- &&            adduser     -h ${home} -s /bin/bash -S hubot    \
- &&            chown -R hubot ${home}
+RUN            apk --no-cache add jq expat                        \
+ &&            mkdir       -p ${home} ${home}/scripts ${home}/bin \
+ &&            adduser     -h ${home} -s /bin/bash -S hubot
 
 WORKDIR        ${home}
+
+COPY           bin bin
 
 ONBUILD ARG    modules
 ONBUILD ARG    scripts='hubot-redis-brain'
 ONBUILD ARG    adapter='shell'
 
 ONBUILD ENV    HUBOT_ADAPTER=${adapter}
+ONBUILD ENV    HUBOT_SCRIPTS=${scripts}
+ONBUILD ENV    HUBOT_MODULES=${modules}
 
 ONBUILD RUN    su hubot                                                                                                                  \
          &&    npm init -y                                                                                                               \
-         &&    npm install --save hubot@${HUBOT_VERSION}                                                                                 \
+         &&    npm install --save hubot@${HUBOT_VERSION} coffee-script                                                                   \
          &&    sed -i '/"main"/d'                                                 package.json                                           \
-         &&    sed -i -r 's/"test".+/"start":"hubot --adapter ${HUBOT_ADAPTER}"/' package.json                                           \
-         &&    echo "${scripts} hubot-help hubot-diagnostics" | xargs -i jq -n -c -M --arg s {} '$s|split(" ")' > external-scripts.json  \
-         &&    npm install --save `jq -r ".[]"                                                                    external-scripts.json` \
-         &&    npm install --save "${modules}" coffee-script
+         &&    sed -i -r 's/"test".+/"start":"hubot"/'                            package.json                                           \
+         &&    chown -R hubot:nogroup .                                                                                                  \
+         &&    chmod -R +x bin
 
 ONBUILD VOLUME ${home}/scripts
 
 ONBUILD USER   hubot
 
-ENTRYPOINT     ["npm", "start", "--"]
+ENTRYPOINT     ["bin/docker-entrypoint.sh"]
