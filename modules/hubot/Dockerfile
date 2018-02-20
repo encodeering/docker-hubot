@@ -19,22 +19,21 @@ ENV         EXPRESS_PORT=8080
 
 RUN         apk --no-cache add jq expat                    \
  &&         mkdir   -p ${home} ${home}/scripts ${home}/bin \
- &&         adduser -h ${home} -s /bin/bash -S hubot
+ &&         adduser -h ${home} -s /bin/bash -S hubot       \
+ &&         chown   -R hubot:nogroup ${home}
 
 WORKDIR     ${home}
 
-COPY        bin bin
+COPY        --chown=hubot:nogroup bin bin
 
-RUN         su hubot                                             \
- &&         npm init -y                                          \
+USER        hubot
+
+RUN         npm init -y                                          \
  &&         npm install --save hubot@${version} coffee-script    \
  &&         sed -i     '/"main"/d'                  package.json \
  &&         sed -i -r 's/"test".+/"start":"hubot"/' package.json \
- &&         chown -R hubot:nogroup .                             \
  &&         chmod -R +x bin
 
 VOLUME      ${home}/scripts
-
-USER        hubot
 
 ENTRYPOINT ["bin/docker-entrypoint.sh"]
