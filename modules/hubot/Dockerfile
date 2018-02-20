@@ -23,6 +23,7 @@ RUN         apk --no-cache add jq expat                    \
  &&         chown   -R hubot:nogroup ${home}
 
 WORKDIR     ${home}
+VOLUME      ${home}/scripts
 
 COPY        --chown=hubot:nogroup bin bin
 
@@ -33,7 +34,5 @@ RUN         npm init -y                                          \
  &&         sed -i     '/"main"/d'                  package.json \
  &&         sed -i -r 's/"test".+/"start":"hubot"/' package.json \
  &&         chmod -R +x bin
-
-VOLUME      ${home}/scripts
 
 ENTRYPOINT ["bin/docker-entrypoint.sh"]
